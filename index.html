@@ -606,7 +606,7 @@ pre.rules{
   <div class="login-card" id="loginCard">
     <div class="login-logo"></div>
     <h1>Perfil Competencial</h1>
-    <p class="login-sub">LOMLOE · Séneca · IES</p>
+    <p class="login-sub">IES Virgen de Villadiego</p>
 
     <form id="formLogin" autocomplete="on">
       <div class="field">
@@ -2939,7 +2939,7 @@ var ACTIONS = {
   ir: function(el){ ir(el.dataset.view); },
   abrirNav: function(){ document.body.classList.add("nav-open"); },
   cerrarNav: function(){ document.body.classList.remove("nav-open"); },
-  cerrarDlg: function(el, e){ if(e && e.target!==el) return; cerrarDlg(); },
+  cerrarDlg: function(el, e){ if(e && e.target!==el && el.classList.contains("ovl")) return; cerrarDlg(); },
   confirmOk: function(){ var cb=_confirmCb; _confirmCb=null; cerrarDlg(); if(cb) cb(); },
   alternarTema: function(){
     var orden = ["auto","light","dark"];
