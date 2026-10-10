@@ -146,14 +146,29 @@ svg{display:block; flex:none}
   color:var(--muted); transition:background .15s,color .15s; flex:none;
 }
 .iconbtn:hover{background:var(--primary-soft); color:var(--primary)}
-#topTitle{font-size:17px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+/* v2.11.2: el título cede espacio al chip del curso antes de que éste se recorte
+   (flex-shrink muy alto: el título se acorta con «…» primero; el chip solo se
+   reduce cuando ya no queda sitio, y entonces degrada de forma controlada) */
+#topTitle{font-size:17px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; flex:0 1000 auto}
 .groupchip{
-  display:inline-flex; align-items:center; gap:7px; max-width:280px; overflow:hidden;
+  display:inline-flex; align-items:center; gap:7px; min-width:0; max-width:100%; flex:0 1 auto;
   background:var(--primary-soft); color:var(--primary-strong); font-weight:600; font-size:12.5px;
   border:1px solid color-mix(in srgb,var(--primary) 25%,transparent);
-  padding:5px 11px; border-radius:99px; white-space:nowrap; text-overflow:ellipsis;
+  padding:5px 11px; border-radius:99px; white-space:nowrap;
 }
 .groupchip svg{flex:none}
+/* El texto vive en un span propio y SIN recorte cuando cabe: el redondeo subpíxel
+   del texto (décimas de px) queda absorbido por el padding de la píldora en lugar
+   de pintar una elipsis «fantasma». Solo con .recorta —la añade ajustarChipCurso
+   cuando no cabe ni la variante compacta— se recorta de verdad con «…» */
+.groupchip .gc-txt{min-width:0; white-space:nowrap}
+.groupchip.recorta .gc-txt{overflow:hidden; text-overflow:ellipsis}
+/* Variante compacta (la activa ajustarChipCurso si el texto completo no cabe):
+   año abreviado y tipografía menor para conservar los datos clave en una línea */
+.groupchip.compact{font-size:11px; padding:4px 10px; gap:5px}
+.groupchip.compact .gc-full{display:none}
+.groupchip .gc-mini{display:none}
+.groupchip.compact .gc-mini{display:inline}
 button.groupchip{cursor:pointer; font:inherit; transition:box-shadow .15s, background .15s}
 button.groupchip:hover{box-shadow:0 0 0 2px color-mix(in srgb,var(--primary) 22%,transparent)}
 .curso-elegir{display:flex; flex-direction:column; gap:8px; max-height:52vh; overflow:auto; padding:2px}
@@ -217,7 +232,7 @@ tr.year-row .btn{margin-left:10px; padding:3px 9px; font-size:11.5px}
 .grupo-meta{color:var(--muted); font-size:12.5px; display:flex; flex-direction:column; gap:4px; margin-bottom:12px}
 .grupo-meta span{display:flex; align-items:center; gap:6px}
 .acc-body .actions{display:flex; gap:6px; flex-wrap:wrap}
-.top-actions{margin-left:auto; display:flex; align-items:center; gap:6px}
+.top-actions{margin-left:auto; display:flex; align-items:center; gap:6px; flex:none}
 .userchip{
   display:inline-flex; align-items:center; gap:8px; padding:5px 11px 5px 5px; border-radius:99px;
   border:1px solid var(--border); background:var(--card); transition:border-color .15s; max-width:230px;
@@ -2076,6 +2091,8 @@ function aplicarTema(){
   if(meta) meta.setAttribute("content", temaEfectivo()==="dark" ? "#0b1220" : "#0b1f4b");
   var btn = $("#themeBtn"); if(btn) btn.innerHTML = icon(temaEfectivo()==="dark"?"sun":"moon");
 }
+/** v2.11.2: año escolar abreviado para el chip en pantallas estrechas: 2025/2026 → 25/26 */
+function aeCorto(ae){ return String(ae||"").replace(/^\d{2}(\d{2})\/\d{2}(\d{2})$/, "$1/$2"); }
 function renderTopbar(){
   var titulos = {inicio:"Perfil Competencial", resumen:"Resumen del grupo", competencias:"Análisis por competencia", alumno:"Ficha del alumno", stats:"Estadísticas del grupo", cursos:"Cursos escolares", admin:"Administración", ajustes:"Ajustes"};
   $("#topTitle").textContent = titulos[S.view] || "Perfil Competencial";
@@ -2084,9 +2101,35 @@ function renderTopbar(){
   if(ae){
     var ds = grupoActivo();
     chip.style.display = "";
-    chip.innerHTML = icon("layers",13) + ' Curso escolar ' + esc(ae) + (ds? ' · Grupo ' + esc(ds.meta.unidadNombre) : '') + (ds && ds.meta.archivado ? ' · ARCHIVADO' : '');
+    var arch = ds && ds.meta.archivado;
+    chip.innerHTML = icon("layers",13)
+      + '<span class="gc-txt"><span class="gc-full">Curso escolar ' + esc(ae) + (ds? ' · Grupo ' + esc(ds.meta.unidadNombre) : '') + (arch? ' · ARCHIVADO' : '') + '</span>'
+      + '<span class="gc-mini">' + esc(aeCorto(ae)) + (ds? ' · ' + esc(ds.meta.unidadNombre) : '') + (arch? ' · ARCHIVADO' : '') + '</span></span>';
+    ajustarChipCurso();
   }else{ chip.style.display = "none"; }
 }
+/** v2.11.2: adapta el chip del topbar al espacio REAL disponible, en dos pasos:
+    1) si el texto completo no cabe, pasa a la variante compacta (año abreviado y
+       tipografía menor) y 2) si tampoco cabe esa, la recorta con «…». Se mide el
+    ancho real del texto (Range, sin redondeo) frente al de su caja, con una
+    tolerancia en px que evita decisiones falsas por el redondeo subpíxel y que
+    aprovecha el padding de la píldora como colchón invisible. */
+function ajustarChipCurso(){
+  var chip = $("#groupChip");
+  if(!chip || chip.style.display==="none") return;
+  chip.classList.remove("compact"); chip.classList.remove("recorta");
+  var t = chip.querySelector(".gc-txt");
+  if(!t) return;
+  var rg = document.createRange(); rg.selectNodeContents(t);
+  if(rg.getBoundingClientRect().width > t.getBoundingClientRect().width + 2){
+    chip.classList.add("compact");
+    rg = document.createRange(); rg.selectNodeContents(t);
+    if(rg.getBoundingClientRect().width > t.getBoundingClientRect().width + 4) chip.classList.add("recorta");
+  }
+}
+/* Reevalúa el chip al redimensionar la ventana (sin retardo: el ajuste debe
+   aplicarse antes de pintar el fotograma redimensionado) */
+window.addEventListener("resize", ajustarChipCurso);
 function renderActual(){
   renderNav(); renderTopbar(); aplicarTema();
   $all(".view").forEach(function(v){ v.classList.remove("active"); });
