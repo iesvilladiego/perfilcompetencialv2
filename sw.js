@@ -9,7 +9,7 @@
      (perfil-competencial-*). Cache Storage es compartido por origen:
      borrar "las demás" destruiría la caché de otras PWAs (p. ej. el portal)
    ===================================================================== */
-var VERSION = "perfil-competencial-v2.12.1";
+var VERSION = "perfil-competencial-v2.12.2";
 var SHELL = [
   "./",
   "./index.html",
