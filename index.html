@@ -690,7 +690,7 @@ pre.rules{
     <p class="login-sub">Conectando con Firebase</p>
   </div>
 
-  <p class="login-copy">v2.9.1 · PWA · Acceso con usuario y contraseña · Datos en Firebase Realtime Database</p>
+  <p class="login-copy"><span id="verLogin">v2.10.1</span> · PWA · Acceso con usuario y contraseña · Datos en Firebase Realtime Database</p>
 </div>
 
 <!-- ============ APLICACIÓN ============ -->
@@ -698,14 +698,14 @@ pre.rules{
   <aside id="sidebar" aria-label="Navegación principal">
     <div class="brand">
       <div class="logo" id="brandLogo"></div>
-      <div><b>Perfil Competencial</b><div class="brand-sub"><small>LOMLOE · Séneca</small><span class="verchip" id="verChipSide" title="Versión de la aplicación">v2.9.1</span></div></div>
+      <div><b>Perfil Competencial</b><div class="brand-sub"><small>LOMLOE · Séneca</small><span class="verchip" id="verChipSide" title="Versión de la aplicación">v2.10.1</span></div></div>
     </div>
     <nav id="nav"></nav>
     <div class="sidebar-foot">
       <button class="cloudpill" id="cloudPill" data-action="abrirNube" title="Estado de la nube">
         <span class="dot"></span><span id="cloudPillTxt">Comprobando nube…</span>
       </button>
-      <div class="ver" id="verFoot">v2.9.1 · PWA · GitHub Pages</div>
+      <div class="ver" id="verFoot">v2.10.1 · PWA · GitHub Pages</div>
     </div>
   </aside>
   <div id="scrim" data-action="cerrarNav"></div>
@@ -738,7 +738,7 @@ pre.rules{
 </div>
 
 <nav id="bottomnav" aria-label="Navegación móvil"></nav>
-<span class="verchip verchip-bottom" id="verChipBottom" title="Versión de la aplicación">v2.9.1</span>
+<span class="verchip verchip-bottom" id="verChipBottom" title="Versión de la aplicación">v2.10.1</span>
 <div id="dlgRoot"></div>
 <div id="toasts"></div>
 <div id="printArea"></div>
@@ -771,8 +771,32 @@ var LS_AUTH = "nc-pwa-auth-v2";
 /* PRIMER CURSO ESCOLAR del centro (v2.7): donde están los datos iniciales.
    curso escolar = un AÑO completo (p. ej. 2025/2026) · grupo = una unidad (p. ej. 1º A) */
 var AE_PRIMER_CURSO = "2025/2026";
-/* Versión de la aplicación · debe coincidir con VERSION en sw.js ("perfil-competencial-vX.Y.Z") */
-var APP_VERSION = "v2.9.1";
+/* Versión de la aplicación · sw.js es la FUENTE DE VERDAD: su variable
+   VERSION vale "perfil-competencial-vX.Y.Z". La app la lee de sw.js al
+   arrancar y cada vez que un service worker nuevo toma el control: basta con
+   actualizar la versión en sw.js. APP_VERSION es solo el respaldo (sin
+   conexión o hasta que termine la lectura). */
+var APP_VERSION = "v2.10.1";
+var VERSION_ACTUAL = APP_VERSION;
+/** "perfil-competencial-v2.10.1" → "v2.10.1" (admite también "vX.Y.Z" o "X.Y.Z") */
+function normalizarVersion(raw){
+  var m = String(raw||"").match(/v\d+(?:\.\d+)*/i);
+  if(m) return m[0].toLowerCase();
+  m = String(raw||"").match(/\d+(?:\.\d+)+/);
+  return m ? "v"+m[0] : APP_VERSION;
+}
+/** Lee la variable VERSION de sw.js (fuente de verdad) y repinta la versión
+    donde se muestra. Sin conexión se mantiene la que ya había. */
+function leerVersionSW(){
+  fetch("sw.js", {cache:"no-store"}).then(function(r){ return r.ok ? r.text() : null; }).then(function(t){
+    if(!t) return;
+    var m = t.match(/VERSION\s*=\s*["']([^"']+)["']/);
+    if(m){
+      var v = normalizarVersion(m[1]);
+      if(v !== VERSION_ACTUAL){ VERSION_ACTUAL = v; pintarVersion(); }
+    }
+  }).catch(function(){ /* sin conexión: se mantiene la versión actual */ });
+}
 
 function obtenerConfig(){
   try{
@@ -2024,13 +2048,14 @@ var VISTAS = [
 function vistasPermitidas(){
   return VISTAS.filter(function(v){ return !v.soloAdmin || Auth.esAdmin(); });
 }
-/** Escribe la versión de la app en los chips (menú lateral y barra inferior móvil)
-    y en el pie del menú */
+/** Escribe la versión de la app en los chips (menú lateral y barra inferior
+    móvil), en el pie del menú y en la pantalla de acceso */
 function pintarVersion(){
-  var side = $("#verChipSide"), bottom = $("#verChipBottom"), foot = $("#verFoot");
-  if(side) side.textContent = APP_VERSION;
-  if(bottom) bottom.textContent = APP_VERSION;
-  if(foot) foot.textContent = APP_VERSION + " · PWA · GitHub Pages";
+  var side = $("#verChipSide"), bottom = $("#verChipBottom"), foot = $("#verFoot"), login = $("#verLogin");
+  if(side) side.textContent = VERSION_ACTUAL;
+  if(bottom) bottom.textContent = VERSION_ACTUAL;
+  if(login) login.textContent = VERSION_ACTUAL;
+  if(foot) foot.textContent = VERSION_ACTUAL + " · PWA · GitHub Pages";
 }
 function renderNav(){
   var permitidas = vistasPermitidas();
@@ -2746,8 +2771,8 @@ function renderAjustes(){
     '</div>');
   /* Acerca de */
   h += accSec("ajustes","acerca",
-    '<div class="acc-title"><h3>'+icon("info",17)+' Acerca de</h3><div class="sub">Perfil Competencial LOMLOE · PWA v2.9.1.</div></div>',
-    '<div class="desc" style="margin-bottom:0">Perfil Competencial LOMLOE · PWA v2.9.1 (descarga automática de la nube al iniciar sesión, al reconectar y al volver a la app: los datos guardados en un dispositivo aparecen solos en los demás; aviso automático si las reglas de seguridad de Firebase están abiertas; todas las secciones de cada pantalla son acordeones desplegables, inicialmente plegados y con una sola sección abierta por pantalla; sección «Cursos escolares» en el menú lateral; primer curso del centro: 2025/2026; eliminación de cursos escolares completos con aviso de peligro y confirmación escribiendo el año; eliminación de grupos uno a uno o masiva; cursos de cualquier año con transferencia entre adyacentes y archivo) · Evaluación a partir de informes Séneca (NIVELES_COMPETENCIALES). Los datos se guardan en vuestro proyecto Firebase, aislados por nodo de aplicación, centro y curso escolar, con perfiles de usuario y sincronización automática. Sin servidores intermedios.</div>');
+    '<div class="acc-title"><h3>'+icon("info",17)+' Acerca de</h3><div class="sub">Perfil Competencial LOMLOE · PWA '+VERSION_ACTUAL+'.</div></div>',
+    '<div class="desc" style="margin-bottom:0">Perfil Competencial LOMLOE · PWA '+VERSION_ACTUAL+' (descarga automática de la nube al iniciar sesión, al reconectar y al volver a la app: los datos guardados en un dispositivo aparecen solos en los demás; aviso automático si las reglas de seguridad de Firebase están abiertas; todas las secciones de cada pantalla son acordeones desplegables, inicialmente plegados y con una sola sección abierta por pantalla; sección «Cursos escolares» en el menú lateral; primer curso del centro: 2025/2026; eliminación de cursos escolares completos con aviso de peligro y confirmación escribiendo el año; eliminación de grupos uno a uno o masiva; cursos de cualquier año con transferencia entre adyacentes y archivo) · Evaluación a partir de informes Séneca (NIVELES_COMPETENCIALES). Los datos se guardan en vuestro proyecto Firebase, aislados por nodo de aplicación, centro y curso escolar, con perfiles de usuario y sincronización automática. Sin servidores intermedios.</div>');
   /* Conexión con Firebase: comprobación de reglas abiertas al abrir Ajustes */
   setTimeout(comprobarSeguridadNube, 60);
   return h;
@@ -4075,6 +4100,10 @@ function boot(){
   refrescarInstallBtn();
   Auth.cargar();
   intentarRegistrarSW();
+  /* La versión real la marca sw.js: se lee al arrancar y se relee cuando un
+     service worker nuevo toma el control (la app se autocorrige en vivo) */
+  leerVersionSW();
+  if(navigator.serviceWorker) navigator.serviceWorker.addEventListener("controllerchange", leerVersionSW);
   setInterval(refrescarEstadoNubeUI, 30000);
   if(Auth.sesion){
     flujoPostLogin().then(function(perfil){
@@ -4100,7 +4129,7 @@ window.__app = {
     if(texto.indexOf("\uFFFD")>=0) texto = new TextDecoder("iso-8859-1").decode(buffer);
     return this.importarTextoXML(texto, "buffer.xml");
   },
-  version: APP_VERSION
+  get version(){ return VERSION_ACTUAL; }
 };
 if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", boot);
 else boot();
