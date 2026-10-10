@@ -107,7 +107,24 @@ svg{display:block; flex:none}
   box-shadow:0 6px 16px -6px rgba(37,99,235,.7);
 }
 .brand b{color:#fff; font-size:15.5px; letter-spacing:.2px; display:block; line-height:1.2}
-.brand small{font-size:11.5px; opacity:.75; letter-spacing:.4px; text-transform:uppercase}
+.brand small{font-size:10.5px; opacity:.72; letter-spacing:.3px; text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.brand-sub{display:flex; align-items:center; gap:6px; min-width:0}
+/* Chip de versión (menú lateral, junto a «LOMLOE · Séneca») */
+.verchip{
+  flex:none; display:inline-flex; align-items:center; font-size:10px; font-weight:700;
+  letter-spacing:.3px; line-height:1.6; padding:0 7px; border-radius:99px;
+  color:#a5c8ff; background:rgba(59,130,246,.30); border:1px solid rgba(165,200,255,.32);
+}
+/* Variante para la barra inferior de navegación (móvil): píldora fija y centrada
+   bajo los botones del bottomnav, siempre visible; en escritorio no se muestra */
+.verchip-bottom{
+  display:none; position:fixed; left:50%; transform:translateX(-50%);
+  bottom:calc(2px + env(safe-area-inset-bottom)); z-index:71;
+  font-size:9.5px; letter-spacing:.2px; line-height:1.7; padding:0 8px;
+  color:var(--primary-strong); background:var(--primary-soft);
+  border:1px solid color-mix(in srgb,var(--primary) 22%,transparent);
+  box-shadow:var(--shadow);
+}
 #nav{padding:6px 12px; display:flex; flex-direction:column; gap:2px; flex:1; overflow:auto}
 .navitem{
   display:flex; align-items:center; gap:11px; padding:10px 12px; border-radius:10px;
@@ -559,8 +576,10 @@ pre.rules{
   body.nav-open #scrim{display:block}
   #main{margin-left:0}
   #menuBtn{display:flex}
-  #views{padding:16px 14px 90px}
-  #bottomnav{display:flex}
+  /* El bottomnav reserva una franja inferior para el chip de versión (móvil) */
+  #bottomnav{display:flex; padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+  .verchip-bottom{display:inline-flex}
+  #views{padding:16px 14px 106px}
   #syncChip .txt{display:none}
   #syncChip{padding:7px}
   .userchip .uc-info{display:none}
@@ -679,14 +698,14 @@ pre.rules{
   <aside id="sidebar" aria-label="Navegación principal">
     <div class="brand">
       <div class="logo" id="brandLogo"></div>
-      <div><b>Perfil Competencial</b><small>LOMLOE · Séneca</small></div>
+      <div><b>Perfil Competencial</b><div class="brand-sub"><small>LOMLOE · Séneca</small><span class="verchip" id="verChipSide" title="Versión de la aplicación">v2.9.1</span></div></div>
     </div>
     <nav id="nav"></nav>
     <div class="sidebar-foot">
       <button class="cloudpill" id="cloudPill" data-action="abrirNube" title="Estado de la nube">
         <span class="dot"></span><span id="cloudPillTxt">Comprobando nube…</span>
       </button>
-      <div class="ver">v2.8 · PWA · GitHub Pages</div>
+      <div class="ver" id="verFoot">v2.9.1 · PWA · GitHub Pages</div>
     </div>
   </aside>
   <div id="scrim" data-action="cerrarNav"></div>
@@ -719,6 +738,7 @@ pre.rules{
 </div>
 
 <nav id="bottomnav" aria-label="Navegación móvil"></nav>
+<span class="verchip verchip-bottom" id="verChipBottom" title="Versión de la aplicación">v2.9.1</span>
 <div id="dlgRoot"></div>
 <div id="toasts"></div>
 <div id="printArea"></div>
@@ -751,6 +771,8 @@ var LS_AUTH = "nc-pwa-auth-v2";
 /* PRIMER CURSO ESCOLAR del centro (v2.7): donde están los datos iniciales.
    curso escolar = un AÑO completo (p. ej. 2025/2026) · grupo = una unidad (p. ej. 1º A) */
 var AE_PRIMER_CURSO = "2025/2026";
+/* Versión de la aplicación · debe coincidir con VERSION en sw.js ("perfil-competencial-vX.Y.Z") */
+var APP_VERSION = "v2.9.1";
 
 function obtenerConfig(){
   try{
@@ -2001,6 +2023,14 @@ var VISTAS = [
 ];
 function vistasPermitidas(){
   return VISTAS.filter(function(v){ return !v.soloAdmin || Auth.esAdmin(); });
+}
+/** Escribe la versión de la app en los chips (menú lateral y barra inferior móvil)
+    y en el pie del menú */
+function pintarVersion(){
+  var side = $("#verChipSide"), bottom = $("#verChipBottom"), foot = $("#verFoot");
+  if(side) side.textContent = APP_VERSION;
+  if(bottom) bottom.textContent = APP_VERSION;
+  if(foot) foot.textContent = APP_VERSION + " · PWA · GitHub Pages";
 }
 function renderNav(){
   var permitidas = vistasPermitidas();
@@ -4039,6 +4069,7 @@ function intentarRegistrarSW(){
 
 /* ============ ARRANQUE ============ */
 function boot(){
+  pintarVersion();
   cargarEstado();
   aplicarTema();
   refrescarInstallBtn();
@@ -4069,7 +4100,7 @@ window.__app = {
     if(texto.indexOf("\uFFFD")>=0) texto = new TextDecoder("iso-8859-1").decode(buffer);
     return this.importarTextoXML(texto, "buffer.xml");
   },
-  version: "2.9.1"
+  version: APP_VERSION
 };
 if(document.readyState==="loading") document.addEventListener("DOMContentLoaded", boot);
 else boot();
