@@ -1,5 +1,5 @@
 {
-  "name": "Perfil Competencial LOMLOE",
+  "name": "Perfil Competencial V2",
   "short_name": "Competencias",
   "description": "Evaluación del perfil competencial del alumnado (LOMLOE) a partir de informes Séneca. PWA con acceso por usuario y contraseña, Firebase y sincronización automática.",
   "id": "/perfilcompetencialv2/",
