@@ -73,9 +73,6 @@ svg{display:block; flex:none}
 }
 .login-card h1{font-size:21px; text-align:center}
 .login-sub{text-align:center; color:var(--muted); font-size:13px; margin:4px 0 18px}
-.login-tabs{display:flex; background:var(--card-2); border:1px solid var(--border); border-radius:12px; padding:4px; gap:4px; margin-bottom:18px}
-.ltab{flex:1; text-align:center; padding:8px 10px; border-radius:9px; font-weight:600; font-size:13.5px; color:var(--muted); transition:all .15s}
-.ltab.active{background:var(--primary); color:#fff; box-shadow:0 4px 10px -4px rgba(29,78,216,.5)}
 .login-error{
   margin:12px 0 0; padding:9px 12px; border-radius:10px; font-size:12.5px; font-weight:600;
   background:#fee2e2; color:#991b1b; border:1px solid #fecaca;
@@ -84,7 +81,6 @@ svg{display:block; flex:none}
 .login-foot{text-align:center; margin-top:12px}
 .linkbtn{color:var(--primary); font-size:12.5px; font-weight:600}
 .linkbtn:hover{text-decoration:underline}
-.login-copy{position:relative; color:rgba(255,255,255,.55); font-size:11.5px; margin-top:18px; text-align:center}
 .uidbox{
   display:flex; align-items:center; gap:10px; background:var(--card-2); border:1px dashed var(--border-2);
   border-radius:11px; padding:10px 12px;
@@ -135,17 +131,6 @@ svg{display:block; flex:none}
 .navitem.active{background:rgba(255,255,255,.14); color:var(--sidebar-active); font-weight:600}
 .navitem.active svg{color:#7fb0ff}
 .navitem svg{opacity:.9}
-.sidebar-foot{padding:14px 16px 16px; border-top:1px solid rgba(255,255,255,.09); font-size:12px}
-.cloudpill{
-  display:flex; align-items:center; gap:8px; font-size:12px; color:#c9d7f5;
-  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
-  padding:7px 10px; border-radius:99px; margin-bottom:10px; width:100%; text-align:left;
-}
-.cloudpill .dot{width:8px;height:8px;border-radius:50%;background:#94a3b8;flex:none}
-.cloudpill.ok .dot{background:#34d399; box-shadow:0 0 0 3px rgba(52,211,153,.2)}
-.cloudpill.warn .dot{background:#fbbf24; box-shadow:0 0 0 3px rgba(251,191,36,.2)}
-.cloudpill.err .dot{background:#f87171; box-shadow:0 0 0 3px rgba(248,113,113,.2)}
-.ver{opacity:.55; font-size:11px}
 
 #main{flex:1; margin-left:var(--sidebar-w); display:flex; flex-direction:column; min-width:0; min-height:100vh}
 #topbar{
@@ -233,14 +218,6 @@ tr.year-row .btn{margin-left:10px; padding:3px 9px; font-size:11.5px}
 .grupo-meta span{display:flex; align-items:center; gap:6px}
 .acc-body .actions{display:flex; gap:6px; flex-wrap:wrap}
 .top-actions{margin-left:auto; display:flex; align-items:center; gap:6px}
-#syncChip{
-  display:inline-flex; align-items:center; gap:7px; font-size:12.5px; font-weight:600;
-  color:var(--muted); padding:7px 11px; border-radius:99px; border:1px solid var(--border);
-  background:var(--card); max-width:220px; white-space:nowrap; overflow:hidden;
-}
-#syncChip .dot{width:8px;height:8px;border-radius:50%;background:#94a3b8;flex:none}
-#syncChip.ok .dot{background:var(--ok)} #syncChip.warn .dot{background:var(--warn)}
-#syncChip.err .dot{background:var(--danger)}
 .userchip{
   display:inline-flex; align-items:center; gap:8px; padding:5px 11px 5px 5px; border-radius:99px;
   border:1px solid var(--border); background:var(--card); transition:border-color .15s; max-width:230px;
@@ -580,8 +557,6 @@ pre.rules{
   #bottomnav{display:flex; padding-bottom:calc(24px + env(safe-area-inset-bottom))}
   .verchip-bottom{display:inline-flex}
   #views{padding:16px 14px 106px}
-  #syncChip .txt{display:none}
-  #syncChip{padding:7px}
   .userchip .uc-info{display:none}
   .userchip{padding:5px}
   .table-wrap{max-height:none}
@@ -633,11 +608,6 @@ pre.rules{
     <h1>Perfil Competencial</h1>
     <p class="login-sub">LOMLOE · Séneca · IES</p>
 
-    <div class="login-tabs" id="loginTabs">
-      <button type="button" class="ltab active" data-lmod="entrar">Entrar</button>
-      <button type="button" class="ltab" data-lmod="primero">Primer acceso</button>
-    </div>
-
     <form id="formLogin" autocomplete="on">
       <div class="field">
         <label for="loginUsuario">Usuario</label>
@@ -670,9 +640,11 @@ pre.rules{
 
     <div class="login-foot" id="pieEntrar">
       <span class="login-hint">¿Has olvidado tu contraseña? El administrador o la administradora puede restablecerla desde <b>Administración → Usuarios</b>.</span>
+      <span class="login-hint" id="primerAccesoAyuda" style="display:none">¿Es la primera vez que se usa esta aplicación? <button type="button" class="linkbtn" data-action="mostrarPrimero">Crea la primera cuenta de administrador/a</button> — solo funciona con la base de datos vacía.</span>
     </div>
     <div class="login-foot" id="piePrimero" style="display:none">
       <div class="hint" style="text-align:left">Este formulario <b>solo sirve una vez</b>: crea la primera cuenta de la aplicación, que quedará como <b>administradora</b>. El resto de cuentas las creará esa persona desde «Administración → Usuarios».</div>
+      <button type="button" class="linkbtn" data-action="mostrarEntrar">¿Ya tienes cuenta? Entrar</button>
     </div>
   </div>
 
@@ -690,7 +662,6 @@ pre.rules{
     <p class="login-sub">Conectando con Firebase</p>
   </div>
 
-  <p class="login-copy"><span id="verLogin">v2.10.1</span> · PWA · Acceso con usuario y contraseña · Datos en Firebase Realtime Database</p>
 </div>
 
 <!-- ============ APLICACIÓN ============ -->
@@ -698,15 +669,9 @@ pre.rules{
   <aside id="sidebar" aria-label="Navegación principal">
     <div class="brand">
       <div class="logo" id="brandLogo"></div>
-      <div><b>Perfil Competencial</b><div class="brand-sub"><small>LOMLOE · Séneca</small><span class="verchip" id="verChipSide" title="Versión de la aplicación">v2.10.1</span></div></div>
+      <div><b>Perfil Competencial</b><div class="brand-sub"><small>LOMLOE · Séneca</small><span class="verchip" id="verChipSide" title="Versión de la aplicación">v2.11.1</span></div></div>
     </div>
     <nav id="nav"></nav>
-    <div class="sidebar-foot">
-      <button class="cloudpill" id="cloudPill" data-action="abrirNube" title="Estado de la nube">
-        <span class="dot"></span><span id="cloudPillTxt">Comprobando nube…</span>
-      </button>
-      <div class="ver" id="verFoot">v2.10.1 · PWA · GitHub Pages</div>
-    </div>
   </aside>
   <div id="scrim" data-action="cerrarNav"></div>
   <div id="main">
@@ -715,7 +680,6 @@ pre.rules{
       <span id="topTitle">Perfil Competencial</span>
       <button type="button" class="groupchip" id="groupChip" data-action="cambiarCurso" title="Cambiar de curso · cada curso es un compartimento aislado de datos" style="display:none"></button>
       <div class="top-actions">
-        <button id="syncChip" data-action="sincronizar" title="Estado de sincronización (pulsar para sincronizar ahora)"><span class="dot"></span><span class="txt" id="syncTxt">Nube</span></button>
         <button class="iconbtn" id="installBtn" data-action="instalar" title="Instalar aplicación" style="display:none"></button>
         <button class="iconbtn" id="themeBtn" data-action="alternarTema" title="Cambiar tema"></button>
         <button class="userchip" id="userChip" data-action="abrirCuenta" title="Cuenta">
@@ -738,7 +702,7 @@ pre.rules{
 </div>
 
 <nav id="bottomnav" aria-label="Navegación móvil"></nav>
-<span class="verchip verchip-bottom" id="verChipBottom" title="Versión de la aplicación">v2.10.1</span>
+<span class="verchip verchip-bottom" id="verChipBottom" title="Versión de la aplicación">v2.11.1</span>
 <div id="dlgRoot"></div>
 <div id="toasts"></div>
 <div id="printArea"></div>
@@ -776,7 +740,7 @@ var AE_PRIMER_CURSO = "2025/2026";
    arrancar y cada vez que un service worker nuevo toma el control: basta con
    actualizar la versión en sw.js. APP_VERSION es solo el respaldo (sin
    conexión o hasta que termine la lectura). */
-var APP_VERSION = "v2.10.1";
+var APP_VERSION = "v2.11.1";
 var VERSION_ACTUAL = APP_VERSION;
 /** "perfil-competencial-v2.10.1" → "v2.10.1" (admite también "vX.Y.Z" o "X.Y.Z") */
 function normalizarVersion(raw){
@@ -1578,7 +1542,7 @@ function traerCursosDeNube(){
 function encolar(op){
   S.cola.push(op);
   guardarEstado();
-  refrescarEstadoNubeUI();
+  refrescarAvisoNube();
 }
 /** Auto-sync: tras cualquier cambio en pantalla, envía los grupos afectados a la nube */
 function sincronizarCambios(keys){
@@ -1594,7 +1558,7 @@ function sincronizar(silencioso){
   }
   if(S.sincronizando) return Promise.resolve(false);
   S.sincronizando = true;
-  refrescarEstadoNubeUI();
+  refrescarAvisoNube();
   var cola = S.cola.slice(); S.cola = [];
   var fallo = null;
   var cadena = Promise.resolve();
@@ -1623,13 +1587,13 @@ function sincronizar(silencioso){
     S.sincronizando = false;
     if(fallo){
       S.errorNube = fallo.message||String(fallo);
-      guardarEstado(); refrescarEstadoNubeUI();
+      guardarEstado(); refrescarAvisoNube();
       if(!silencioso) toast("Error al sincronizar: "+S.errorNube,"err");
       return false;
     }
     S.ultimaSync = new Date().toISOString();
     S.errorNube = null;
-    guardarEstado(); refrescarEstadoNubeUI();
+    guardarEstado(); refrescarAvisoNube();
     if(cola.length && !silencioso) toast("Cambios sincronizados automáticamente con la nube","ok");
     return true;
   });
@@ -1741,14 +1705,25 @@ function estadoNube(){
   if(S.ultimaSync) return {cls:"ok", txt:"Nube sincronizada"};
   return {cls:"ok", txt:"Auto-sync activado"};
 }
-function refrescarEstadoNubeUI(){
-  var e = estadoNube();
-  var chip = $("#syncChip"), pill = $("#cloudPill");
-  if(chip){ chip.className = e.cls; $("#syncTxt").textContent = e.txt; }
-  if(pill){ pill.className = "cloudpill "+e.cls; $("#cloudPillTxt").textContent = e.txt; }
+/* Aviso de sincronización: la sincronización con Firebase es automática y
+   silenciosa (no hay chips permanentes); SOLO si no puede haber (sin conexión
+   o error de Firebase) salta un aviso, y otro cuando se restablece. */
+var _avisoNubeMal = false;
+function refrescarAvisoNube(){
+  if(!Auth.sesion){ _avisoNubeMal = false; return; }
+  var mal = !!(S.errorNube || !navigator.onLine);
+  if(mal === _avisoNubeMal) return; /* sin cambio de estado: no repetir el aviso */
+  _avisoNubeMal = mal;
+  if(mal){
+    toast(S.errorNube
+      ? "Sin sincronización con Firebase: " + S.errorNube + ". Los cambios de este dispositivo quedan en cola."
+      : "Sin conexión con Firebase: se trabaja en local y los cambios se subirán al reconectarse.", "warn");
+  }else{
+    toast("Sincronización con Firebase restablecida.", "ok");
+  }
 }
 window.addEventListener("online", function(){ sincronizar(true); descargaAutomatica(false); });
-window.addEventListener("offline", refrescarEstadoNubeUI);
+window.addEventListener("offline", refrescarAvisoNube);
 /* v2.9.1: al volver a la app (pestaña visible de nuevo) también se baja lo cambiado en otros dispositivos */
 document.addEventListener("visibilitychange", function(){
   if(document.visibilityState==="visible") descargaAutomatica(false);
@@ -1761,7 +1736,8 @@ document.addEventListener("visibilitychange", function(){
    usuario ve ni necesita. Las contraseñas las gestiona el administrador.
    - usuario: solo visualización (matriz, fichas, estadísticas, PDF)
    - administrador: importa XML, añade/elimina cursos y gestiona usuarios
-   La primera cuenta (pestaña «Primer acceso») queda como administradora.
+   La primera cuenta queda como administradora: se crea sola SOLO cuando la
+   base de datos está vacía de usuarios (las reglas de Firebase lo vigilan).
    ===================================================================== */
 
 
@@ -1870,10 +1846,33 @@ function asegurarPerfil(){
       Auth.perfil = p; Auth.persistir();
       return p;
     }
-    /* Sin perfil: NO se auto-crea (solo la pestaña «Primer acceso» crea el admin) */
+    /* Sin perfil: si la base de datos está VACÍA de usuarios (p. ej. se
+       borraron todos), se dispara aquí el mecanismo de PRIMER ACCESO: esta
+       cuenta queda como administradora. Las reglas de Firebase solo permiten
+       esa escritura cuando no existe ningún usuario; si ya hay otros, se
+       deniega y se muestra la pantalla de «cuenta sin perfil». */
+    return primerAccesoAutomatico(uid);
+  }).catch(function(){ Auth.perfil = null; return null; });
+}
+/* Primer acceso automático: crea el perfil de administrador/a para la cuenta
+   que entra. VIGILADO POR LAS REGLAS: solo triunfa si no hay usuarios. */
+var _passPrimerAcceso = null; /* se rellena en enviarLogin mientras dura el acceso */
+function primerAccesoAutomatico(uid){
+  var usuario = (Auth.sesion && Auth.sesion.email) ? String(Auth.sesion.email).split("@")[0] : "";
+  var perfil = {
+    usuario: usuario || "admin", nombre: usuario || "Administrador/a",
+    role: "administrador", password: _passPrimerAcceso || "",
+    activo: true, creadoEn: new Date().toISOString()
+  };
+  _passPrimerAcceso = null;
+  return restPut(RUTA_USERS + "/" + uid, perfil).then(function(){
+    Auth.perfil = perfil; Auth.persistir();
+    toast("La base de datos no tenía usuarios: esta cuenta queda como administradora.","ok");
+    return perfil;
+  }).catch(function(){
     Auth.perfil = null;
     return null;
-  }).catch(function(){ Auth.perfil = null; return null; });
+  });
 }
 function adminListarUsuarios(){
   return restGet(RUTA_USERS).then(function(d){
@@ -1912,10 +1911,11 @@ function mostrarLogin(mensaje){
   $("#loginCard").style.display = "";
   $("#pendCard").style.display = "none";
   $("#waitCard").style.display = "none";
-  setLoginModo(loginModo || "entrar");
+  setLoginModo("entrar");
   var err = $("#loginError");
   if(mensaje){ err.textContent = mensaje; err.hidden = false; } else { err.hidden = true; }
   document.title = "Acceso · Perfil Competencial LOMLOE";
+  comprobarPrimerAcceso();
 }
 function mostrarEspera(){
   $("#app").style.display = "none";
@@ -1987,7 +1987,7 @@ function flujoPostLogin(msgError){
       if(!RENDER[v]) v = "inicio";
       S.view = v;
       renderActual();
-      refrescarEstadoNubeUI();
+      refrescarAvisoNube();
       if(S.cola.length && navigator.onLine) setTimeout(function(){ sincronizar(true); }, 2000);
       /* v2.9.1: DESCARGA AUTOMÁTICA al entrar — los datos guardados desde otro
          dispositivo aparecen solos; y comprobación de reglas de seguridad abiertas */
@@ -2048,14 +2048,11 @@ var VISTAS = [
 function vistasPermitidas(){
   return VISTAS.filter(function(v){ return !v.soloAdmin || Auth.esAdmin(); });
 }
-/** Escribe la versión de la app en los chips (menú lateral y barra inferior
-    móvil), en el pie del menú y en la pantalla de acceso */
+/** Escribe la versión de la app (leída de sw.js) en los chips visibles */
 function pintarVersion(){
-  var side = $("#verChipSide"), bottom = $("#verChipBottom"), foot = $("#verFoot"), login = $("#verLogin");
+  var side = $("#verChipSide"), bottom = $("#verChipBottom");
   if(side) side.textContent = VERSION_ACTUAL;
   if(bottom) bottom.textContent = VERSION_ACTUAL;
-  if(login) login.textContent = VERSION_ACTUAL;
-  if(foot) foot.textContent = VERSION_ACTUAL + " · PWA · GitHub Pages";
 }
 function renderNav(){
   var permitidas = vistasPermitidas();
@@ -2103,7 +2100,7 @@ function renderActual(){
     if(S.view==="admin") cargarUsuariosAdmin();
   }
   actualizarChipUsuario();
-  refrescarEstadoNubeUI();
+  refrescarAvisoNube();
   try{ if(history.replaceState) history.replaceState(null,"","#/"+S.view); }catch(e){}
 }
 function ir(view){
@@ -2654,7 +2651,7 @@ function cargarUsuariosAdmin(){
   if(!cont || !Auth.esAdmin()) return;
   adminListarUsuarios().then(function(lista){
     if(!$("#usuariosTabla")) return;
-    if(lista.length===0){ cont.innerHTML = '<div class="sin-usuarios">Todavía no hay usuarios. La primera cuenta se crea desde la pestaña «Primer acceso» de la pantalla de entrada y queda como administradora.</div>'; return; }
+    if(lista.length===0){ cont.innerHTML = '<div class="sin-usuarios">Todavía no hay usuarios. Con la base de datos vacía, la primera cuenta que inicie sesión quedará automáticamente como administradora.</div>'; return; }
     var yo = Auth.uid();
     lista.sort(function(a,b){ return String(a.usuario).localeCompare(String(b.usuario),"es"); });
     var h = '<table class="users-t"><thead><tr><th>Usuario</th><th>Perfil</th><th>Estado</th><th>Creado</th><th></th></tr></thead><tbody>';
@@ -2799,16 +2796,37 @@ var RENDER = {
 
 /* ============ ACCESO ============ */
 var loginModo = "entrar";
+/* Modo del formulario de acceso: «entrar» (normal) o «primero» (primer
+   acceso). SIN pestañas: el modo «primero» solo lo activa la app sola cuando
+   la base de datos está vacía de usuarios (ver comprobarPrimerAcceso) o
+   desde el enlace de emergencia tras un acceso fallido. */
 function setLoginModo(m){
   loginModo = m;
-  $all("#loginTabs .ltab").forEach(function(b){ b.classList.toggle("active", b.dataset.lmod===m); });
   var fEntrar = $("#formLogin"), fPrimero = $("#formPrimero");
   if(fEntrar) fEntrar.style.display = (m==="entrar") ? "" : "none";
   if(fPrimero) fPrimero.style.display = (m==="primero") ? "" : "none";
   var pieEntrar = $("#pieEntrar"), piePrimero = $("#piePrimero");
   if(pieEntrar) pieEntrar.style.display = (m==="entrar") ? "" : "none";
   if(piePrimero) piePrimero.style.display = (m==="primero") ? "" : "none";
+  var ayuda = $("#primerAccesoAyuda");
+  if(ayuda) ayuda.style.display = "none";
   $("#loginError").hidden = true;
+}
+/** ¿Base de datos VACÍA de usuarios? → mecanismo de PRIMER ACCESO (una sola
+    vez): la app muestra sola el formulario que crea la primera cuenta, que
+    queda como administradora. Si ya hay usuarios, o las reglas publicadas
+    impiden leerlos (no se puede saber), la pantalla queda en modo «entrar». */
+function comprobarPrimerAcceso(){
+  if(!navigator.onLine) return;
+  fetch(rtdbBase() + "/" + RUTA_USERS + ".json").then(function(r){
+    if(!r.ok) return "desconocido"; /* reglas publicadas: lectura denegada */
+    return r.json().then(function(d){ return (d && Object.keys(d).length) ? "usuarios" : "vacia"; },
+                         function(){ return "desconocido"; });
+  }).then(function(res){
+    if(res!=="vacia") return;
+    var enLogin = !Auth.sesion && $("#loginView").style.display==="flex" && $("#loginCard").style.display!=="none";
+    if(enLogin && loginModo==="entrar") setLoginModo("primero");
+  }).catch(function(){ /* sin conexión u otro error: se queda en modo «entrar» */ });
 }
 function enviarLogin(e){
   e.preventDefault();
@@ -2825,11 +2843,21 @@ function enviarLogin(e){
   btn.disabled = true;
   btn.textContent = "Entrando…";
   authEntrar(usuario, pass)
-   .then(function(){ return flujoPostLogin(); })
+   .then(function(){
+     /* Se guarda solo mientras dura el inicio de sesión: permite que el
+        mecanismo de primer acceso (base vacía de usuarios) guarde el perfil
+        con su contraseña, igual que hacía el formulario de primer acceso. */
+     _passPrimerAcceso = pass;
+     return flujoPostLogin();
+   })
    .catch(function(err){
      var el = $("#loginError");
      el.textContent = (err && err.message) || String(err);
      el.hidden = false;
+     /* Credenciales desconocidas: se ofrece el enlace al mecanismo de
+        primer acceso (solo funciona de verdad si la base está vacía) */
+     var ayuda = $("#primerAccesoAyuda");
+     if(ayuda && /incorrectos/i.test(el.textContent)) ayuda.style.display = "";
      btn.disabled = false;
      btn.textContent = "Entrar";
    });
@@ -2863,7 +2891,7 @@ function enviarPrimerAcceso(e){
     authSalir();
     var msg = (e2 && e2.message) || String(e2);
     if(msg.indexOf("ya está en uso")>=0)
-      msg = "Ese nombre de usuario ya está registrado. Si ya existe la cuenta del centro, entra con la pestaña «Entrar».";
+      msg = "Ese nombre de usuario ya está registrado. Si ya existe la cuenta del centro, entra con tu usuario y contraseña.";
     else if(msg.indexOf("Permission denied")>=0 || msg.indexOf("permission")>=0)
       msg = "Ya existen usuarios registrados: solo el PRIMER acceso puede crear la cuenta de administrador/a. Pide a otro administrador que cree tu usuario desde «Administración → Usuarios».";
     fallo(msg);
@@ -3449,6 +3477,8 @@ var ACTIONS = {
     }).catch(function(e){ toast("Error al descargar: "+(e.message||e),"err"); });
   },
   abrirNube: function(){ dlgNube(); },
+  mostrarPrimero: function(){ setLoginModo("primero"); },
+  mostrarEntrar: function(){ setLoginModo("entrar"); },
   nubeRefrescar: function(){ refrescarNubeDlg(null); },
   nubeCargar: function(el){
     var key = el.dataset.key;
@@ -3746,11 +3776,6 @@ document.addEventListener("keydown", function(e){
 document.addEventListener("submit", function(e){
   if(e.target && e.target.id==="formLogin") enviarLogin(e);
   if(e.target && e.target.id==="formPrimero") enviarPrimerAcceso(e);
-});
-/* Pestañas de la pantalla de acceso */
-document.addEventListener("click", function(e){
-  var t = e.target.closest(".ltab");
-  if(t) setLoginModo(t.dataset.lmod);
 });
 
 /* ============ IMPORTACIÓN DE XML (con auto-sync) ============ */
@@ -4104,7 +4129,7 @@ function boot(){
      service worker nuevo toma el control (la app se autocorrige en vivo) */
   leerVersionSW();
   if(navigator.serviceWorker) navigator.serviceWorker.addEventListener("controllerchange", leerVersionSW);
-  setInterval(refrescarEstadoNubeUI, 30000);
+  setInterval(refrescarAvisoNube, 30000);
   if(Auth.sesion){
     flujoPostLogin().then(function(perfil){
       if(perfil && perfil.role==="administrador" && S.view==="admin") cargarUsuariosAdmin();
