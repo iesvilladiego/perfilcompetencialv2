@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Perfil Competencial LOMLOE · IES</title>
+<title>Perfil Competencial V2 LOMLOE · IES</title>
 <meta name="description" content="Evaluación del perfil competencial del alumnado (LOMLOE) a partir de informes Séneca. PWA con acceso por usuario y contraseña, Firebase y sincronización automática.">
 <meta name="theme-color" content="#0b1f4b">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -620,7 +620,7 @@ pre.rules{
   <div class="login-bg" aria-hidden="true"></div>
   <div class="login-card" id="loginCard">
     <div class="login-logo"></div>
-    <h1>Perfil Competencial</h1>
+    <h1>Perfil Competencial V2</h1>
     <p class="login-sub">IES Virgen de Villadiego</p>
 
     <form id="formLogin" autocomplete="on">
@@ -684,7 +684,7 @@ pre.rules{
   <aside id="sidebar" aria-label="Navegación principal">
     <div class="brand">
       <div class="logo" id="brandLogo"></div>
-      <div><b>Perfil Competencial</b><div class="brand-sub"><small>LOMLOE · Séneca</small><span class="verchip" id="verChipSide" title="Versión de la aplicación">v2.11.1</span></div></div>
+      <div><b>Perfil Competencial V2</b><div class="brand-sub"><small>LOMLOE · Séneca</small><span class="verchip" id="verChipSide" title="Versión de la aplicación">v2.11.1</span></div></div>
     </div>
     <nav id="nav"></nav>
   </aside>
@@ -692,7 +692,7 @@ pre.rules{
   <div id="main">
     <header id="topbar">
       <button class="iconbtn" id="menuBtn" data-action="abrirNav" aria-label="Menú"></button>
-      <span id="topTitle">Perfil Competencial</span>
+      <span id="topTitle">Perfil Competencial V2</span>
       <button type="button" class="groupchip" id="groupChip" data-action="cambiarCurso" title="Cambiar de curso · cada curso es un compartimento aislado de datos" style="display:none"></button>
       <div class="top-actions">
         <button class="iconbtn" id="installBtn" data-action="instalar" title="Instalar aplicación" style="display:none"></button>
@@ -1929,7 +1929,7 @@ function mostrarLogin(mensaje){
   setLoginModo("entrar");
   var err = $("#loginError");
   if(mensaje){ err.textContent = mensaje; err.hidden = false; } else { err.hidden = true; }
-  document.title = "Acceso · Perfil Competencial LOMLOE";
+  document.title = "Acceso · Perfil Competencial V2 LOMLOE";
   comprobarPrimerAcceso();
 }
 function mostrarEspera(){
@@ -1963,7 +1963,7 @@ function mostrarBloqueado(){
 function mostrarApp(){
   $("#loginView").style.display = "none";
   $("#app").style.display = "";
-  document.title = "Perfil Competencial LOMLOE · IES";
+  document.title = "Perfil Competencial V2 LOMLOE · IES";
   actualizarChipUsuario();
 }
 function actualizarChipUsuario(){
@@ -2094,8 +2094,8 @@ function aplicarTema(){
 /** v2.11.2: año escolar abreviado para el chip en pantallas estrechas: 2025/2026 → 25/26 */
 function aeCorto(ae){ return String(ae||"").replace(/^\d{2}(\d{2})\/\d{2}(\d{2})$/, "$1/$2"); }
 function renderTopbar(){
-  var titulos = {inicio:"Perfil Competencial", resumen:"Resumen del grupo", competencias:"Análisis por competencia", alumno:"Ficha del alumno", stats:"Estadísticas del grupo", cursos:"Cursos escolares", admin:"Administración", ajustes:"Ajustes"};
-  $("#topTitle").textContent = titulos[S.view] || "Perfil Competencial";
+  var titulos = {inicio:"Perfil Competencial V2", resumen:"Resumen del grupo", competencias:"Análisis por competencia", alumno:"Ficha del alumno", stats:"Estadísticas del grupo", cursos:"Cursos escolares", admin:"Administración", ajustes:"Ajustes"};
+  $("#topTitle").textContent = titulos[S.view] || "Perfil Competencial V2";
   var chip = $("#groupChip");
   var ae = asegurarCursoActivo();
   if(ae){
@@ -2811,8 +2811,8 @@ function renderAjustes(){
     '</div>');
   /* Acerca de */
   h += accSec("ajustes","acerca",
-    '<div class="acc-title"><h3>'+icon("info",17)+' Acerca de</h3><div class="sub">Perfil Competencial LOMLOE · PWA '+VERSION_ACTUAL+'.</div></div>',
-    '<div class="desc" style="margin-bottom:0">Perfil Competencial LOMLOE · PWA '+VERSION_ACTUAL+' (descarga automática de la nube al iniciar sesión, al reconectar y al volver a la app: los datos guardados en un dispositivo aparecen solos en los demás; aviso automático si las reglas de seguridad de Firebase están abiertas; todas las secciones de cada pantalla son acordeones desplegables, inicialmente plegados y con una sola sección abierta por pantalla; sección «Cursos escolares» en el menú lateral; primer curso del centro: 2025/2026; eliminación de cursos escolares completos con aviso de peligro y confirmación escribiendo el año; eliminación de grupos uno a uno o masiva; cursos de cualquier año con transferencia entre adyacentes y archivo) · Evaluación a partir de informes Séneca (NIVELES_COMPETENCIALES). Los datos se guardan en vuestro proyecto Firebase, aislados por nodo de aplicación, centro y curso escolar, con perfiles de usuario y sincronización automática. Sin servidores intermedios.</div>');
+    '<div class="acc-title"><h3>'+icon("info",17)+' Acerca de</h3><div class="sub">Perfil Competencial V2 LOMLOE · PWA '+VERSION_ACTUAL+'.</div></div>',
+    '<div class="desc" style="margin-bottom:0">Perfil Competencial V2 LOMLOE · PWA '+VERSION_ACTUAL+' (descarga automática de la nube al iniciar sesión, al reconectar y al volver a la app: los datos guardados en un dispositivo aparecen solos en los demás; aviso automático si las reglas de seguridad de Firebase están abiertas; todas las secciones de cada pantalla son acordeones desplegables, inicialmente plegados y con una sola sección abierta por pantalla; sección «Cursos escolares» en el menú lateral; primer curso del centro: 2025/2026; eliminación de cursos escolares completos con aviso de peligro y confirmación escribiendo el año; eliminación de grupos uno a uno o masiva; cursos de cualquier año con transferencia entre adyacentes y archivo) · Evaluación a partir de informes Séneca (NIVELES_COMPETENCIALES). Los datos se guardan en vuestro proyecto Firebase, aislados por nodo de aplicación, centro y curso escolar, con perfiles de usuario y sincronización automática. Sin servidores intermedios.</div>');
   /* Conexión con Firebase: comprobación de reglas abiertas al abrir Ajustes */
   setTimeout(comprobarSeguridadNube, 60);
   return h;
